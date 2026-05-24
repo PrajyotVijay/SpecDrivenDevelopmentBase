@@ -57,7 +57,7 @@ Spec merged into `openspec/specs/reports/spec.md` permanently.
 
 ## OpenSpec Files
 
-'''
+```
 openspec/
 ├── config.yaml
 ├── specs/reports/spec.md
@@ -67,7 +67,8 @@ openspec/
 ├── design.md
 ├── tasks.md
 └── specs/reports/spec.md
-'''
+
+```
 
 ## Tech Stack
 - Python 3.13
