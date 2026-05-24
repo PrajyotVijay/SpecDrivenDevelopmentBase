@@ -1,69 +1,44 @@
-# Reports API
+# 🤖 Vibe Coded — CSV Export Feature
 
-A small FastAPI service that exposes a paginated `/reports` endpoint backed by a deterministic in-memory dataset.
+## What is Vibe Coding?
+Vibe coding is a term coined by Andrej Karpathy in February 2025. It means:
+> "Prompt an AI, accept what it generates, run it, re-prompt if it breaks."
 
-## Layout
+No planning. No spec. Just vibes. ✨
 
-```
-app/
-├── __init__.py
-├── data.py        # Seed dataset (120 rows, deterministic)
-├── models.py      # Pydantic models — internal vs public
-├── reports.py     # Filter / sort / pagination query layer
-└── main.py        # FastAPI HTTP layer
-```
+## What I Built
+Added a **CSV Export** feature to the Reports API.
 
-## Requirements
+### New Endpoint
+`GET /reports/export` — Downloads the current filtered reports as a CSV file.
 
-- Python 3.10+
-- pip
+### How it works
+- Accepts the same query parameters as `GET /reports`
+- Returns a downloadable `reports.csv` file
+- Columns: `id, title, status, owner, amount, created_at`
 
-## Setup
+## How I Built It (Vibe Coding Process)
+1. Got a casual Slack message from PM:
+   > *"hey can you add a CSV export button to the reports page? should download whats currently showing. thanks!"*
+2. Pasted it directly into **Cursor Composer**
+3. Accepted whatever Cursor generated
+4. Tests passed ✅ — shipped it!
 
+## What's Missing (The Vibe Coding Problem)
+- ❌ No proper spec written
+- ❌ No edge cases considered upfront
+- ❌ No documentation of decisions
+- ❌ Could have leaked internal fields
+- ❌ No row cap for large datasets
+
+## Tech Stack
+- Python 3.13
+- FastAPI
+- Pydantic
+- Pytest
+
+## Tests
 ```bash
-git clone https://github.com/IITMBSMLOps/SpecDrivenDevelopmentBase.git
-cd SpecDrivenDevelopmentBase
-
-python3 -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
-
-pip install -e .
+pytest -q
 ```
-
-## Run the API
-
-```bash
-uvicorn app.main:app --reload --port 8000
-```
-
-Then hit it from another terminal:
-
-```bash
-curl "http://localhost:8000/health"
-curl "http://localhost:8000/reports?limit=3" | python -m json.tool
-```
-
-## Endpoints
-
-| Method | Path       | Description                                            |
-| ------ | ---------- | ------------------------------------------------------ |
-| GET    | `/health`  | Liveness probe — returns `{"status": "ok"}`.           |
-| GET    | `/reports` | Paginated list of reports with filtering and sorting.  |
-
-### `GET /reports` query parameters
-
-| Param        | Type            | Default      | Notes                                            |
-| ------------ | --------------- | ------------ | ------------------------------------------------ |
-| `status`     | enum            | —            | One of `pending`, `approved`, `rejected`, `archived`. |
-| `date_from`  | datetime (ISO)  | —            | Lower bound on `created_at` (inclusive).         |
-| `date_to`    | datetime (ISO)  | —            | Upper bound on `created_at` (inclusive).         |
-| `sort`       | string          | `created_at` | One of `id`, `title`, `status`, `owner`, `amount`, `created_at`. |
-| `descending` | bool            | `true`       | Sort direction.                                  |
-| `offset`     | int (>=0)       | `0`          | Pagination offset.                               |
-| `limit`      | int (1..200)    | `20`         | Page size.                                       |
-
-Responses return only the documented public fields.
-
----
-
-For the workshop exercise, see [exercises/01_vibe/README.md](exercises/01_vibe/README.md).
+9 tests passing ✅
