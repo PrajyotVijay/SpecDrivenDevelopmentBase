@@ -6,11 +6,13 @@ from the HTTP layer (`main.py`) so it can be reused by any future export feature
 
 from __future__ import annotations
 
+import csv
+import io
 from datetime import datetime
 from typing import Iterable
 
 from app.data import all_reports
-from app.models import Report, ReportStatus
+from app.models import Report, ReportPublic, ReportStatus
 
 
 _SORTABLE_FIELDS = {"id", "title", "status", "owner", "amount", "created_at"}
@@ -39,3 +41,26 @@ def query(
         rows = (r for r in rows if r.created_at <= date_to)
 
     return sorted(rows, key=lambda r: getattr(r, sort), reverse=descending)
+
+
+_CSV_FIELDS = ("id", "title", "status", "owner", "amount", "created_at")
+
+
+def to_csv(items: list[ReportPublic]) -> str:
+    """Serialize report rows to RFC 4180 CSV (header + data)."""
+
+    buf = io.StringIO()
+    writer = csv.DictWriter(buf, fieldnames=_CSV_FIELDS)
+    writer.writeheader()
+    for item in items:
+        writer.writerow(
+            {
+                "id": item.id,
+                "title": item.title,
+                "status": item.status,
+                "owner": item.owner,
+                "amount": item.amount,
+                "created_at": item.created_at.isoformat(),
+            }
+        )
+    return buf.getvalue()
